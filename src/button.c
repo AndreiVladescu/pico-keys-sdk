@@ -53,7 +53,7 @@ volatile bool force_button_wait = false;
 
 #if !defined(ENABLE_EMULATION)
 #ifdef ESP_PLATFORM
-static bool picok_board_button_read(void) {
+WEAK bool picokey_button_read(void) {
     int boot_state = gpio_get_level(BOOT_PIN);
     return boot_state == 0;
 }
@@ -92,11 +92,11 @@ static bool __no_inline_not_in_flash_func(picok_get_bootsel_button)(void) {
 
     return button_state;
 }
-static bool picok_board_button_read(void) {
+WEAK bool picokey_button_read(void) {
   return picok_get_bootsel_button();
 }
 #else
-static bool picok_board_button_read(void) {
+WEAK bool picokey_button_read(void) {
     return true; // always unpressed
 }
 #endif
@@ -129,7 +129,7 @@ void button_wait_start_timeout(uint32_t timeout_seconds) {
     signal_emit_param(SIGNAL_USER_PRESENCE_REQUEST, &data);
     cancel_button = false;
     async_button_wait = true;
-    async_button_pressed = picok_board_button_read();
+    async_button_pressed = picokey_button_read();
     async_button_started = board_millis();
     async_button_timeout = button_timeout;
     async_button_led_mode = led_get_mode();
@@ -141,7 +141,7 @@ void button_wait_poll(void) {
     if (!async_button_wait) {
         return;
     }
-    bool pressed = picok_board_button_read();
+    bool pressed = picokey_button_read();
     uint32_t now = board_millis();
     if (!async_button_pressed && pressed) {
         async_button_pressed = true;
@@ -206,7 +206,7 @@ void button_task(void) {
             return;
         }
 #endif
-        bool current_button_state = picok_board_button_read();
+        bool current_button_state = picokey_button_read();
 #ifdef PICO_PLATFORM
         multicore_lockout_end_timeout_us(1000);
 #endif

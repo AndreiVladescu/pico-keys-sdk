@@ -46,4 +46,8 @@ extern int (*button_pressed_cb)(uint8_t);
 
 extern bool is_req_button_pending(void);
 
+/* Raw board button state (true = pressed). Weak: an application can override
+   it to provide user presence from another source, e.g. a fingerprint sensor. */
+extern bool picokey_button_read(void);
+
 #endif // BUTTON_H
